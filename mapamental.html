@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa Mental – Eletrostática & Eletrodinâmica</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #04060f;
+    --bg2: #070b1a;
+    --gold: #f5c542;
+    --blue: #00c8ff;
+    --purple: #9b5de5;
+    --green: #06d6a0;
+    --red: #ff4d6d;
+    --orange: #ff9f1c;
+    --white: #e8f0fe;
+    --glow-blue: 0 0 16px #00c8ff88, 0 0 40px #00c8ff33;
+    --glow-purple: 0 0 16px #9b5de588, 0 0 40px #9b5de533;
+    --glow-gold: 0 0 16px #f5c54288, 0 0 40px #f5c54233;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    font-family: 'Rajdhani', sans-serif;
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Animated background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,200,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,200,255,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    animation: gridDrift 30s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @keyframes gridDrift {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(48px); }
+  }
+
+  /* Noise overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    padding: 40px 20px 80px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* ─── HEADER ─── */
+  .header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .header .school {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 4px;
+    color: var(--blue);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    opacity: 0.8;
+  }
+
+  .header h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(1.6rem, 4vw, 3rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--blue), var(--purple), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 2px;
+    line-height: 1.2;
+    margin-bottom: 12px;
+    animation: shimmer 4s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.3); }
+  }
+
+  .header .subtitle {
+    font-size: 1rem;
+    color: rgba(232,240,254,0.5);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .divider {
+    width: 160px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--blue), var(--purple), transparent);
+    margin: 20px auto 0;
+    animation: pulse 3s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:0.6} 50%{opacity:1} }
+
+  /* ─── SECTION TITLES ─── */
+  .section-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 32px;
+    padding: 16px 24px;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .section-title::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.08;
+    border-radius: 8px;
+  }
+
+  .section-title.blue { color: var(--blue); border: 1px solid rgba(0,200,255,0.3); box-shadow: var(--glow-blue); }
+  .section-title.blue::before { background: var(--blue); }
+  .section-title.purple { color: var(--purple); border: 1px solid rgba(155,93,229,0.3); box-shadow: var(--glow-purple); }
+  .section-title.purple::before { background: var(--purple); }
+
+  .section-icon {
+    font-size: 1.8rem;
+    filter: drop-shadow(0 0 8px currentColor);
+  }
+
+  /* ─── CARDS GRID ─── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 20px;
+    margin-bottom: 60px;
+  }
+
+  .card {
+    background: rgba(255,255,255,0.03);
+    border-radius: 14px;
+    padding: 22px 20px;
+    border: 1px solid rgba(255,255,255,0.08);
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .card:hover {
+    transform: translateY(-6px) scale(1.02);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Color variants */
+  .card.c-blue { border-color: rgba(0,200,255,0.25); }
+  .card.c-blue:hover { box-shadow: 0 8px 32px rgba(0,200,255,0.25), 0 0 0 1px rgba(0,200,255,0.4); }
+  .card.c-blue .card-accent { background: var(--blue); }
+  .card.c-blue .card-title { color: var(--blue); }
+
+  .card.c-purple { border-color: rgba(155,93,229,0.25); }
+  .card.c-purple:hover { box-shadow: 0 8px 32px rgba(155,93,229,0.25), 0 0 0 1px rgba(155,93,229,0.4); }
+  .card.c-purple .card-accent { background: var(--purple); }
+  .card.c-purple .card-title { color: var(--purple); }
+
+  .card.c-green { border-color: rgba(6,214,160,0.25); }
+  .card.c-green:hover { box-shadow: 0 8px 32px rgba(6,214,160,0.25), 0 0 0 1px rgba(6,214,160,0.4); }
+  .card.c-green .card-accent { background: var(--green); }
+  .card.c-green .card-title { color: var(--green); }
+
+  .card.c-red { border-color: rgba(255,77,109,0.25); }
+  .card.c-red:hover { box-shadow: 0 8px 32px rgba(255,77,109,0.25), 0 0 0 1px rgba(255,77,109,0.4); }
+  .card.c-red .card-accent { background: var(--red); }
+  .card.c-red .card-title { color: var(--red); }
+
+  .card.c-orange { border-color: rgba(255,159,28,0.25); }
+  .card.c-orange:hover { box-shadow: 0 8px 32px rgba(255,159,28,0.25), 0 0 0 1px rgba(255,159,28,0.4); }
+  .card.c-orange .card-accent { background: var(--orange); }
+  .card.c-orange .card-title { color: var(--orange); }
+
+  .card.c-gold { border-color: rgba(245,197,66,0.25); }
+  .card.c-gold:hover { box-shadow: 0 8px 32px rgba(245,197,66,0.25), 0 0 0 1px rgba(245,197,66,0.4); }
+  .card.c-gold .card-accent { background: var(--gold); }
+  .card.c-gold .card-title { color: var(--gold); }
+
+  /* Glow corner */
+  .card::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    opacity: 0.06;
+    transition: opacity 0.3s;
+  }
+  .card.c-blue::before { background: var(--blue); }
+  .card.c-purple::before { background: var(--purple); }
+  .card.c-green::before { background: var(--green); }
+  .card.c-red::before { background: var(--red); }
+  .card.c-orange::before { background: var(--orange); }
+  .card.c-gold::before { background: var(--gold); }
+  .card:hover::before { opacity: 0.15; }
+
+  .card-accent {
+    width: 32px;
+    height: 3px;
+    border-radius: 2px;
+    margin-bottom: 14px;
+  }
+
+  .card-icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    display: block;
+    filter: drop-shadow(0 0 6px currentColor);
+  }
+
+  .card-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .card-formula {
+    background: rgba(0,0,0,0.4);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-family: 'Courier New', monospace;
+    font-size: 1.1rem;
+    color: var(--white);
+    text-align: center;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+    border: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .card-body {
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: rgba(232,240,254,0.75);
+    font-weight: 400;
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-top: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .tag.blue { background: rgba(0,200,255,0.15); color: var(--blue); border: 1px solid rgba(0,200,255,0.3); }
+  .tag.purple { background: rgba(155,93,229,0.15); color: var(--purple); border: 1px solid rgba(155,93,229,0.3); }
+  .tag.green { background: rgba(6,214,160,0.15); color: var(--green); border: 1px solid rgba(6,214,160,0.3); }
+  .tag.red { background: rgba(255,77,109,0.15); color: var(--red); border: 1px solid rgba(255,77,109,0.3); }
+  .tag.orange { background: rgba(255,159,28,0.15); color: var(--orange); border: 1px solid rgba(255,159,28,0.3); }
+  .tag.gold { background: rgba(245,197,66,0.15); color: var(--gold); border: 1px solid rgba(245,197,66,0.3); }
+
+  /* ─── CONNECTION LINE ─── */
+  .connector {
+    text-align: center;
+    margin: 10px 0 50px;
+    position: relative;
+  }
+  .connector::before, .connector::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: calc(50% - 60px);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15));
+  }
+  .connector::before { left: 0; }
+  .connector::after { right: 0; background: linear-gradient(270deg, transparent, rgba(255,255,255,0.15)); }
+  .connector-node {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 10px 24px;
+    border-radius: 40px;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(232,240,254,0.5);
+  }
+
+  /* ─── CENTRAL NODE ─── */
+  .central-node {
+    text-align: center;
+    margin: 0 auto 60px;
+    max-width: 500px;
+  }
+
+  .central-circle {
+    display: inline-block;
+    padding: 32px 48px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(0,200,255,0.1), rgba(155,93,229,0.1));
+    border: 2px solid rgba(0,200,255,0.3);
+    box-shadow: 0 0 40px rgba(0,200,255,0.15), 0 0 80px rgba(155,93,229,0.1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .central-circle::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(0,200,255,0.06), transparent 70%);
+    animation: breathe 4s ease-in-out infinite;
+  }
+
+  @keyframes breathe {
+    0%,100%{opacity:0.5} 50%{opacity:1}
+  }
+
+  .central-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: block;
+    margin-bottom: 6px;
+    position: relative;
+  }
+
+  .central-sub {
+    font-size: 0.85rem;
+    color: rgba(232,240,254,0.4);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    position: relative;
+  }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    text-align: center;
+    margin-top: 60px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    color: rgba(232,240,254,0.3);
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+  }
+
+  /* Stagger animation delays */
+  .cards-grid .card:nth-child(1) { animation-delay: 0.1s; }
+  .cards-grid .card:nth-child(2) { animation-delay: 0.2s; }
+  .cards-grid .card:nth-child(3) { animation-delay: 0.3s; }
+  .cards-grid .card:nth-child(4) { animation-delay: 0.4s; }
+  .cards-grid .card:nth-child(5) { animation-delay: 0.5s; }
+  .cards-grid .card:nth-child(6) { animation-delay: 0.6s; }
+
+  /* lightning bolts floating */
+  .lightning {
+    position: fixed;
+    font-size: 2rem;
+    opacity: 0.04;
+    pointer-events: none;
+    animation: float 12s ease-in-out infinite;
+    z-index: 0;
+  }
+  .l1 { top: 10%; left: 5%; animation-delay: 0s; }
+  .l2 { top: 30%; right: 4%; animation-delay: 3s; }
+  .l3 { top: 65%; left: 2%; animation-delay: 6s; }
+  .l4 { bottom: 15%; right: 8%; animation-delay: 9s; }
+
+  @keyframes float {
+    0%,100%{ transform: translateY(0) rotate(-15deg); opacity:0.04; }
+    50%{ transform: translateY(-20px) rotate(10deg); opacity:0.08; }
+  }
+
+  /* responsive */
+  @media(max-width:600px){
+    .cards-grid { grid-template-columns: 1fr; }
+    .header h1 { font-size: 1.4rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="lightning l1">⚡</div>
+<div class="lightning l2">⚡</div>
+<div class="lightning l3">⚡</div>
+<div class="lightning l4">⚡</div>
+
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="school">Escola SESI de Itapeva – CE 399 · Física</div>
+    <h1>Eletrostática & Eletrodinâmica</h1>
+    <div class="subtitle">Mapa Mental Eletrônico</div>
+    <div class="divider"></div>
+  </div>
+
+  <!-- CENTRAL NODE -->
+  <div class="central-node">
+    <div class="central-circle">
+      <span class="central-label">⚡ ELETRICIDADE</span>
+      <span class="central-sub">Física · Eletromagnetismo</span>
+    </div>
+  </div>
+
+  <!-- ════════════════ ELETROSTÁTICA ════════════════ -->
+  <div class="section-title blue" style="animation-delay:0.1s">
+    <span class="section-icon">🔵</span>
+    ELETROSTÁTICA — Cargas em Repouso
+  </div>
+
+  <div class="cards-grid">
+
+    <!-- CARGA ELÉTRICA -->
+    <div class="card c-blue">
+      <div class="card-accent"></div>
+      <span class="card-icon" style="color:var(--blue)">⚛️</span>
+      <div class="card-title">Carga Elétrica</div>
+      <div class="card-body">
+        Propriedade intrínseca das partículas. Próton (+), elétron (−), nêutron (0).<br><br>
+        <strong style="color:var(--blue)">Quantização:</strong> Q = n · e<br>
+        <em>e = 1,6 × 10⁻¹⁹ C</em><br><br>
+        Corpo <em>positivo</em> → perdeu elétrons<br>
+        Corpo <em>negativo</em> → ganhou elétrons<br>
+        Corpo <em>neutro</em> → p⁺ = e⁻
+      </div>
+      <span class="tag blue">SI: Coulomb (C)</span>
+    </div>
+
+    <!-- PROCESSOS DE ELETRIZAÇÃO -->
+    <div class="card c-purple">
+      <div class="card-accent"></div>
+      <span class="card-icon" style="color:var(--purple)">🔄</span>
+      <div class="card-title">Processos de Eletrização</div>
+      <div class="card-body">
+        <strong style="color:var(--purple)">Atrito:</strong> dois isolantes se esfregam → transferência de e⁻; cargas opostas.<br><br>
+        <strong style="color:var(--purple)">Contato:</strong> condutor eletrizado toca neutro → ambos ficam com mesma carga.<br><br>
+        <strong style="color:var(--purple)">Indução:</strong> indutor se aproxima → polarização → aterramento → eletrização sem contato.
+      </div>
+      <span class="tag purple">Conservação de carga</span>
+    </div>
+
+    <!-- LEI DE COULOMB -->
+    <div class="card c-green">
+      <div class="card-accent"></div>
+      <span class="card-icon" style="color:var(--green)">🔗</span>
+      <div class="card-title">Lei de Coulomb</div>
+      <div class="card-formula">F = k · |Q₁·Q₂| / d²</div>
+      <div class="card-body">
+        <strong style="color:var(--green)">k</strong> = 9×10⁹ N·m²/C² (vácuo)<br>
+        Força <em>proporcional</em> ao produto das cargas<br>
+        Força <em>inversamente proporcional</em> a d²<br><br>
+        Cargas iguais → repulsão<br>
+        Cargas opostas → atração
+      </div>
+      <span class="tag green">Charles Coulomb · 1785</span>
+    </div>
+
+    <!-- CAMPO ELÉTRICO -->
+    <div class="card c-red">
+      <div class="card-accent"></div>
+      <span class="card-icon" style="color:var(--red)">📡</span>
+      <div class="card-title">Campo Elétrico</div>
+      <div class="card-formula">E = F / q &nbsp;|&nbsp; E = k·Q / d²</div>
+      <div class="card-body">
+        Região do espaço onde uma carga sente força elétrica.<br><br>
+        <strong style="color:var(--red)">+Q:</strong> linhas saem da carga<br>
+        <strong style="color:var(--red)">−Q:</strong> linhas chegam à carga<br><br>
+        Grandeza vetorial (módulo, direção, sentido)<br>
+        Unidade: N/C ou V/m
+      </div>
+      <span class="tag red">SI: N/C</span>
+    </div>
+
+    <!-- POTENCIAL ELÉTRICO -->
+    <div class="card c-gold">
+      <div class="card-accent"></div>
+      <span class="card-icon" style="color:var(--gold)">🔋</span>
+      <div class="card-title">Potencial Elétrico</div>
+      <div class="card-formula">V = k · Q / d</div>
+      <div class="card-body">
+        Energia potencial por unidade de carga.<br><br>
+        <strong style="color:var(--gold)">Ep = Q · V</strong><br>
+        <strong style="color:var(--gold)">Ddp = V₁ − V₂</strong><br><br>
+        Superfícies equipotenciais ⊥ linhas de campo.<br>
+        Unidade: Volt (V = J/C)
+      </div>
+      <span class="tag gold">SI: Volt (V)</span>
+    </div>
+
+  </div>
+
+  <!-- CONNECTOR -->
+  <div class="connector">
+    <div class="connector-node">⚡ Cargas em Movimento ⚡</div>
+  </div>
+
+  <!-- ════════════════ ELETRODINÂMICA ════════════════ -->
+  <div class="section-title purple">
+    <span class="section-icon">🟣</span>
+    ELETRODINÂMICA — Cargas em Movimento
+  </div>
+
+  <div class="cards-grid">
+
+    <!-- CORRENTE ELÉTRICA -->
+    <div class="card c-blue">
+      <div class="card-accent"></div>
+      <span class="card-icon" style="color:var(--blue)">🌊</span>
+      <div class="card-title">Corrente Elétrica</div>
+      <div class="card-formula">i = ΔQ / Δt</div>
+      <div class="card-body">
+        Fluxo ordenado de cargas elétricas.<br><br>
+        <strong style="color:var(--blue)">Real:</strong> elétrons de − para +<br>
+        <strong style="color:var(--blue)">Convencional:</strong> sentido + para −<br><br>
+        Corrente Contínua (CC) e Alternada (CA).<br>
+        Causada por uma ddp entre os terminais.
+      </div>
+      <span class="tag blue">SI: Ampère (A)</span>
+    </div>
+
+    <!-- RESISTÊNCIA ELÉTRICA -->
+    <div class="card c-orange">
+      <div class="card-accent"></div>
+      <span class="card-icon" style="color:var(--orange)">🚧</span>
+      <div class="card-title">Resistência Elétrica</div>
+      <div class="card-formula">R = ρ · L / A</div>
+      <div class="card-body">
+        Oposição do condutor à passagem de corrente.<br><br>
+        <strong style="color:var(--orange)">ρ</strong> = resistividade do material<br>
+        <strong style="color:var(--orange)">L</strong> = comprimento (m)<br>
+        <strong style="color:var(--orange)">A</strong> = área transversal (m²)<br><br>
+        Efeito Joule: R converte energia elétrica em calor.
+      </div>
+      <span class="tag orange">SI: Ohm (Ω)</span>
+    </div>
+
+    <!-- LEI DE OHM -->
+    <div class="card c-green">
+      <div class="card-accent"></div>
+      <span class="card-icon" style="color:var(--green)">⚖️</span>
+      <div class="card-title">Lei de Ohm</div>
+      <div class="card-formula">U = R · i</div>
+      <div class="card-body">
+        <strong style="color:var(--green)">1ª Lei:</strong> i ∝ U e i ∝ 1/R.<br>
+        Para resistores ôhmicos, R é constante.<br><br>
+        <strong style="color:var(--green)">2ª Lei:</strong> R = ρ · L / A<br>
+        R depende do material, comprimento e seção.<br><br>
+        Resistor não-ôhmico → R varia com i.
+      </div>
+      <span class="tag green">Georg Ohm · 1827</span>
+    </div>
+
+    <!-- POTÊNCIA ELÉTRICA -->
+    <div class="card c-red">
+      <div class="card-accent"></div>
+      <span class="card-icon" style="color:var(--red)">⚡</span>
+      <div class="card-title">Potência Elétrica</div>
+      <div class="card-formula">P = U · i = i²·R = U²/R</div>
+      <div class="card-body">
+        Taxa de transformação de energia elétrica.<br><br>
+        <strong style="color:var(--red)">Efeito Joule:</strong> Q = P · t<br><br>
+        Aparelhos elétricos possuem tensão e potência nominais.<br>
+        Sobretensão → queima do aparelho.
+      </div>
+      <span class="tag red">SI: Watt (W)</span>
+    </div>
+
+    <!-- CIRCUITOS ELÉTRICOS -->
+    <div class="card c-purple">
+      <div class="card-accent"></div>
+      <span class="card-icon" style="color:var(--purple)">🔌</span>
+      <div class="card-title">Circuitos Elétricos</div>
+      <div class="card-body">
+        <strong style="color:var(--purple)">Série:</strong> mesma corrente<br>
+        Req = R₁ + R₂ + … + Rₙ<br><br>
+        <strong style="color:var(--purple)">Paralelo:</strong> mesma ddp<br>
+        1/Req = 1/R₁ + 1/R₂ + …<br>
+        (2 resistores: Req = R₁·R₂ / R₁+R₂)<br><br>
+        <strong style="color:var(--purple)">Misto:</strong> combinação de ambos
+      </div>
+      <span class="tag purple">Leis de Kirchhoff</span>
+    </div>
+
+  </div>
+
+  <!-- SUMMARY TABLE -->
+  <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:28px; margin-bottom:40px;">
+    <div style="font-family:'Orbitron',sans-serif; font-size:0.9rem; letter-spacing:2px; color:rgba(232,240,254,0.5); text-transform:uppercase; margin-bottom:20px; text-align:center;">
+      📊 Grandezas & Unidades — Resumo
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:12px;">
+
+      <div style="background:rgba(0,200,255,0.06); border-radius:8px; padding:12px; border:1px solid rgba(0,200,255,0.15); text-align:center;">
+        <div style="color:var(--blue); font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:4px;">Carga</div>
+        <div style="font-family:'Courier New',monospace; font-size:1.1rem;">Q → Coulomb (C)</div>
+      </div>
+
+      <div style="background:rgba(6,214,160,0.06); border-radius:8px; padding:12px; border:1px solid rgba(6,214,160,0.15); text-align:center;">
+        <div style="color:var(--green); font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:4px;">Força</div>
+        <div style="font-family:'Courier New',monospace; font-size:1.1rem;">F → Newton (N)</div>
+      </div>
+
+      <div style="background:rgba(255,77,109,0.06); border-radius:8px; padding:12px; border:1px solid rgba(255,77,109,0.15); text-align:center;">
+        <div style="color:var(--red); font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:4px;">Campo</div>
+        <div style="font-family:'Courier New',monospace; font-size:1.1rem;">E → N/C ou V/m</div>
+      </div>
+
+      <div style="background:rgba(245,197,66,0.06); border-radius:8px; padding:12px; border:1px solid rgba(245,197,66,0.15); text-align:center;">
+        <div style="color:var(--gold); font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:4px;">Potencial</div>
+        <div style="font-family:'Courier New',monospace; font-size:1.1rem;">V → Volt (V)</div>
+      </div>
+
+      <div style="background:rgba(0,200,255,0.06); border-radius:8px; padding:12px; border:1px solid rgba(0,200,255,0.15); text-align:center;">
+        <div style="color:var(--blue); font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:4px;">Corrente</div>
+        <div style="font-family:'Courier New',monospace; font-size:1.1rem;">i → Ampère (A)</div>
+      </div>
+
+      <div style="background:rgba(255,159,28,0.06); border-radius:8px; padding:12px; border:1px solid rgba(255,159,28,0.15); text-align:center;">
+        <div style="color:var(--orange); font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:4px;">Resistência</div>
+        <div style="font-family:'Courier New',monospace; font-size:1.1rem;">R → Ohm (Ω)</div>
+      </div>
+
+      <div style="background:rgba(155,93,229,0.06); border-radius:8px; padding:12px; border:1px solid rgba(155,93,229,0.15); text-align:center;">
+        <div style="color:var(--purple); font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:4px;">Potência</div>
+        <div style="font-family:'Courier New',monospace; font-size:1.1rem;">P → Watt (W)</div>
+      </div>
+
+      <div style="background:rgba(6,214,160,0.06); border-radius:8px; padding:12px; border:1px solid rgba(6,214,160,0.15); text-align:center;">
+        <div style="color:var(--green); font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:4px;">Tensão (ddp)</div>
+        <div style="font-family:'Courier New',monospace; font-size:1.1rem;">U → Volt (V)</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    Escola SESI de Itapeva – CE 399 &nbsp;·&nbsp; Física &nbsp;·&nbsp; Eletrostática & Eletrodinâmica &nbsp;·&nbsp; 2026
+  </div>
+
+</div>
+</body>
+</html>
